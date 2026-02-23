@@ -1,7 +1,8 @@
 import os
 from typing import TypedDict, Literal
 from langchain_community.utilities import SQLDatabase
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langgraph.graph import StateGraph, END
 from dotenv import load_dotenv
@@ -69,7 +70,7 @@ Question: {state["query"]}"""
 def execute_vector(state: AgentState):
     print("[Vector Retriever Node] Querying unstructured data...")
     try:
-        embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=embeddings, collection_name="support_tweets")
         docs = vectorstore.similarity_search(state["query"], k=3)
         context = "\n-----\n".join([d.page_content for d in docs])
